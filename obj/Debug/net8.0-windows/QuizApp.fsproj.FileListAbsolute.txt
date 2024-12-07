@@ -140,3 +140,4 @@ C:\Users\Tech Shop\Desktop\المناهج\PL3\Project\QuizApp\obj\Debug\net8.0-w
 C:\Users\Tech Shop\Desktop\المناهج\PL3\Project\QuizApp\obj\Debug\net8.0-windows\QuizApp.pdb
 C:\Users\Tech Shop\Desktop\المناهج\PL3\Project\QuizApp\obj\Debug\net8.0-windows\QuizApp.genruntimeconfig.cache
 C:\Users\Tech Shop\Desktop\المناهج\PL3\Project\QuizApp\obj\Debug\net8.0-windows\ref\QuizApp.dll
+C:\Users\Tech Shop\Desktop\المناهج\PL3\Project\QuizApp\obj\Debug\net8.0-windows\QuizApp.sourcelink.json
