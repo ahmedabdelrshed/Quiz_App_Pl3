@@ -22,3 +22,28 @@ resultLabel.Visible <- false
 form.Controls.AddRange([| questionLabel; answerBox; optionsPanel; timerLabel; submitButton; resultLabel |])
 
 Application.Run(form)
+
+// 2- Questions using map
+type Question =
+    {
+        Text: string // Question text
+        Choices: string list option // List of choices (if any), otherwise None for open-ended questions
+        CorrectAnswer: string // Correct answer for the question
+    }
+
+let quizQuestions : Map<int, Question> =
+    Map.ofList [
+        (1, { Text = "Which number comes next in the series? 2, 4, 8, 16, __"; 
+              Choices = Some ["24"; "32"; "20"; "12"]; CorrectAnswer = "32" })
+        (2, { Text = "What is the missing letter in this sequence? A, C, E, G, __"; 
+              Choices = Some ["I"; "H"; "J"; "K"]; CorrectAnswer = "I" })
+        (3, { Text = "Solve: 5 + 3"; 
+              Choices = None; CorrectAnswer = "8" })
+        (4, { Text = "What is the missing letter in this sequence? A, C, E, G, __"; 
+              Choices = Some ["I"; "H"; "J"; "K"]; CorrectAnswer = "I" })
+    ]
+
+let mutable currentQuestionIndex = 1
+let mutable score = 0
+let timePerQuestion = 10
+let mutable remainingTime = timePerQuestion
