@@ -47,3 +47,16 @@ let mutable currentQuestionIndex = 1
 let mutable score = 0
 let timePerQuestion = 10
 let mutable remainingTime = timePerQuestion
+
+let timer = new Timer(Interval = 1000)
+
+timer.Tick.Add(fun _ ->
+    remainingTime <- remainingTime - 1
+    timerLabel.Text <- sprintf "Time: %d" remainingTime
+
+    if remainingTime <= 0 then
+        timer.Stop()
+        resultLabel.Text <- "Time's up!"
+        currentQuestionIndex <- currentQuestionIndex + 1
+        loadNextQuestion()
+)
