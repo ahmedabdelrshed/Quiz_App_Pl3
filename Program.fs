@@ -23,6 +23,34 @@ form.Controls.AddRange([| questionLabel; answerBox; optionsPanel; timerLabel; su
 
 Application.Run(form)
 
+
+// 3- Function to load the next question
+let loadNextQuestion() =
+    if quizQuestions.ContainsKey(currentQuestionIndex) then
+        let question = quizQuestions.[currentQuestionIndex]
+        questionLabel.Text <- question.Text
+        optionsPanel.Controls.Clear()
+        answerBox.Clear()
+        resultLabel.Text <- ""
+        remainingTime <- timePerQuestion
+        timerLabel.Text <- sprintf "Time: %d" remainingTime
+        timer.Start()
+
+        match question.Choices with
+        | Some choices ->
+            answerBox.Visible <- false
+            optionsPanel.Visible <- true
+            choices
+            |> List.iteri (fun i choice ->
+                let optionButton = new RadioButton(Text = choice, Location = Point(10, i * 30), Size = Size(400, 30))
+                optionsPanel.Controls.Add(optionButton))
+        | None ->
+            answerBox.Visible <- true
+            optionsPanel.Visible <- false
+    else
+        showFinalResults()
+
+
 // 2- Questions using map
 type Question =
     {
