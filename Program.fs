@@ -88,3 +88,31 @@ timer.Tick.Add(fun _ ->
         currentQuestionIndex <- currentQuestionIndex + 1
         loadNextQuestion()
 )
+
+
+
+// Submit button click event
+submitButton.Click.Add(fun _ ->
+    if quizQuestions.ContainsKey(currentQuestionIndex) then
+        let question = quizQuestions.[currentQuestionIndex]
+        let userAnswer =
+            match question.Choices with
+            | Some _ ->
+                optionsPanel.Controls
+                |> Seq.cast<RadioButton>
+                |> Seq.tryFind (fun rb -> rb.Checked)
+                |> Option.map (fun rb -> rb.Text)
+            | None ->
+                Some answerBox.Text
+
+        match userAnswer with
+        | Some answer when answer = question.CorrectAnswer ->
+            score <- score + 1
+            resultLabel.Text <- "Correct!"
+        | _ ->
+            resultLabel.Text <- "Incorrect!"
+
+        timer.Stop()
+        currentQuestionIndex <- currentQuestionIndex + 1
+        loadNextQuestion()
+)
