@@ -116,3 +116,24 @@ submitButton.Click.Add(fun _ ->
         currentQuestionIndex <- currentQuestionIndex + 1
         loadNextQuestion()
 )
+
+// Final Result Display
+let showFinalResults() =
+    optionsPanel.Visible <- false
+    answerBox.Visible <- false
+    timerLabel.Visible <- false
+    timer.Stop()
+    resultLabel.Visible <- true
+    if score >= (quizQuestions.Count / 2) then
+        questionLabel.ForeColor <- Color.Green
+        questionLabel.Text <- "Congratulations👏! You passed the quiz!"
+    else
+        questionLabel.ForeColor <- Color.Red
+        questionLabel.Text <- "Sorry, you failed the quiz!"
+    resultLabel.Text <- sprintf "Your score: %d/%d" score quizQuestions.Count
+    submitButton.Visible <- false
+    submitButton.Enabled <- false
+
+// Start the application
+loadNextQuestion()
+Application.Run(form)
