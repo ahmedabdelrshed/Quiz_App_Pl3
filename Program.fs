@@ -21,8 +21,50 @@ resultLabel.BackColor <- Color.Honeydew
 resultLabel.Visible <- false
 form.Controls.AddRange([| questionLabel; answerBox; optionsPanel; timerLabel; submitButton; resultLabel |])
 
-Application.Run(form)
 
+// 2- Questions using map
+type Question =
+    {
+        Text: string // Question text
+        Choices: string list option // List of choices (if any), otherwise None for open-ended questions
+        CorrectAnswer: string // Correct answer for the question
+    }
+
+let quizQuestions : Map<int, Question> =
+    Map.ofList [
+        (1, { Text = "Which number comes next in the series? 2, 4, 8, 16, __"; 
+              Choices = Some ["24"; "32"; "20"; "12"]; CorrectAnswer = "32" })
+        (2, { Text = "What is the missing letter in this sequence? A, C, E, G, __"; 
+              Choices = Some ["I"; "H"; "J"; "K"]; CorrectAnswer = "I" })
+        (3, { Text = "Solve: 5 + 3"; 
+              Choices = None; CorrectAnswer = "8" })
+        (4, { Text = "What is the missing letter in this sequence? A, C, E, G, __"; 
+              Choices = Some ["I"; "H"; "J"; "K"]; CorrectAnswer = "I" })
+    ]
+
+let mutable currentQuestionIndex = 1
+let mutable score = 0
+let timePerQuestion = 10
+let mutable remainingTime = timePerQuestion
+
+let timer = new Timer(Interval = 1000)
+
+// Final Result Display
+let showFinalResults() =
+    optionsPanel.Visible <- false
+    answerBox.Visible <- false
+    timerLabel.Visible <- false
+    timer.Stop()
+    resultLabel.Visible <- true
+    if score >= (quizQuestions.Count / 2) then
+        questionLabel.ForeColor <- Color.Green
+        questionLabel.Text <- "Congratulations👏! You passed the quiz!"
+    else
+        questionLabel.ForeColor <- Color.Red
+        questionLabel.Text <- "Sorry, you failed the quiz!"
+    resultLabel.Text <- sprintf "Your score: %d/%d" score quizQuestions.Count
+    submitButton.Visible <- false
+    submitButton.Enabled <- false
 
 // 3- Function to load the next question
 let loadNextQuestion() =
@@ -51,32 +93,6 @@ let loadNextQuestion() =
         showFinalResults()
 
 
-// 2- Questions using map
-type Question =
-    {
-        Text: string // Question text
-        Choices: string list option // List of choices (if any), otherwise None for open-ended questions
-        CorrectAnswer: string // Correct answer for the question
-    }
-
-let quizQuestions : Map<int, Question> =
-    Map.ofList [
-        (1, { Text = "Which number comes next in the series? 2, 4, 8, 16, __"; 
-              Choices = Some ["24"; "32"; "20"; "12"]; CorrectAnswer = "32" })
-        (2, { Text = "What is the missing letter in this sequence? A, C, E, G, __"; 
-              Choices = Some ["I"; "H"; "J"; "K"]; CorrectAnswer = "I" })
-        (3, { Text = "Solve: 5 + 3"; 
-              Choices = None; CorrectAnswer = "8" })
-        (4, { Text = "What is the missing letter in this sequence? A, C, E, G, __"; 
-              Choices = Some ["I"; "H"; "J"; "K"]; CorrectAnswer = "I" })
-    ]
-
-let mutable currentQuestionIndex = 1
-let mutable score = 0
-let timePerQuestion = 10
-let mutable remainingTime = timePerQuestion
-
-let timer = new Timer(Interval = 1000)
 
 timer.Tick.Add(fun _ ->
     remainingTime <- remainingTime - 1
@@ -106,33 +122,22 @@ submitButton.Click.Add(fun _ ->
                 Some answerBox.Text
 
         match userAnswer with
+        | None -> 
+            ignore (MessageBox.Show("Please select or enter an answer before Submit.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning))
         | Some answer when answer = question.CorrectAnswer ->
             score <- score + 1
             resultLabel.Text <- "Correct!"
-        | _ ->
+            timer.Stop()
+            currentQuestionIndex <- currentQuestionIndex + 1
+            loadNextQuestion()
+        | Some _ ->
             resultLabel.Text <- "Incorrect!"
-
-        timer.Stop()
-        currentQuestionIndex <- currentQuestionIndex + 1
-        loadNextQuestion()
+            timer.Stop()
+            currentQuestionIndex <- currentQuestionIndex + 1
+            loadNextQuestion()
 )
 
-// Final Result Display
-let showFinalResults() =
-    optionsPanel.Visible <- false
-    answerBox.Visible <- false
-    timerLabel.Visible <- false
-    timer.Stop()
-    resultLabel.Visible <- true
-    if score >= (quizQuestions.Count / 2) then
-        questionLabel.ForeColor <- Color.Green
-        questionLabel.Text <- "Congratulations👏! You passed the quiz!"
-    else
-        questionLabel.ForeColor <- Color.Red
-        questionLabel.Text <- "Sorry, you failed the quiz!"
-    resultLabel.Text <- sprintf "Your score: %d/%d" score quizQuestions.Count
-    submitButton.Visible <- false
-    submitButton.Enabled <- false
+
 
 // Start the application
 loadNextQuestion()
